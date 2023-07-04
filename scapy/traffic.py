@@ -1,10 +1,13 @@
 from scapy.all import *
-from prettytable import PrettyTable
+from rich.console import Console
+from rich.table import Table
 
 '''
 Función para mostrar la tabla de direcciones y 
 el número de paquetes recibidos por cada una.
 '''
+console = Console()
+
 
 def process_packet(packet):
     # Extraemos la dirección de destino del paquete
@@ -20,11 +23,18 @@ def process_packet(packet):
     rows = [(dst, count) for dst, count in packet_counts.items()]
     rows = sorted(rows, key=lambda x: x[1], reverse=True)
 
-    # Creamos la tabla de PrettyTable y la mostramos por pantalla
-    table = PrettyTable(["Dirección", "Número de paquetes recibidos"])
+    # Creamos la tabla con la librería rich
+    table = Table(title="Tabla de direcciones y número de paquetes recibidos")
+    table.add_column("Dirección", style="cyan")
+    table.add_column("Número de paquetes recibidos", style="magenta")
     for row in rows:
-        table.add_row(row)
-    print(table)
+        table.add_row(row[0], str(row[1]))
+    
+    # Limpiamos la consola antes de imprimir la nueva tabla
+    console.clear()
+
+    # Mostramos la tabla usando la clase Console
+    console.print(table)
 
 packet_counts = {}
 
